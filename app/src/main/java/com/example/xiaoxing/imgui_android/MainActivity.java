@@ -26,4 +26,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         glView.onResume();
     }
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        glView.onDestroy();
+    }
 }

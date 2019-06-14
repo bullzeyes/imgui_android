@@ -54,6 +54,11 @@ public class MainGLView extends GLSurfaceView {
         setRenderer(new Renderer());
     }
 
+    public void onDestroy() {
+
+        GLViewJniLib.destroy();
+    }
+
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
         private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
         public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
