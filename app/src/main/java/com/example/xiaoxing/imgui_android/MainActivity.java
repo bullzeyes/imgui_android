@@ -2,6 +2,7 @@ package com.example.xiaoxing.imgui_android;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {

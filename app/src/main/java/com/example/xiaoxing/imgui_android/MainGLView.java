@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -57,6 +58,53 @@ public class MainGLView extends GLSurfaceView {
     public void onDestroy() {
 
         GLViewJniLib.destroy();
+    }
+
+    // TODO: This can be moved to native layer, to avoid dependency on java
+    @Override public boolean onTouchEvent(MotionEvent e) {
+
+        final String [] actionName = {
+          "ACTION_DOWN",
+          "ACTION_UP",
+          "ACTION_MOVE",
+          "ACTION_CANCEL",
+          "ACTION_OUTSIDE",
+          "ACTION_POINTER_DOWN",
+          "ACTION_POINTER_UP",
+          "ACTION_HOVER_MOVE",
+          "ACTION_SCROLL",
+          "ACTION_HOVER_ENTER",
+          "ACTION_HOVER_EXIT",
+          "ACTION_BUTTON_PRESS",
+          "ACTION_BUTTON_RELEASE"
+        };
+
+        int a = e.getActionMasked();
+        // Not handling ACTION_POINTER_ events, treat all pointers as the same button
+        float x = e.getX();
+        float y = e.getY();
+        if (a < actionName.length) {
+            Log.i(TAG, String.format("%s: %.2f, %.2f", actionName[a], x, y));
+        }
+        else {
+            Log.e(TAG, "invalid action index");
+        }
+
+        switch (a) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_UP:
+                GLViewJniLib.updateTouchEvent(a, x, y);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_POINTER_DOWN:
+                // Currently not handling these
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
