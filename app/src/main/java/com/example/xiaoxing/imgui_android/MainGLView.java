@@ -1,10 +1,17 @@
 package com.example.xiaoxing.imgui_android;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -16,13 +23,25 @@ public class MainGLView extends GLSurfaceView {
 
     private static String TAG = "MainGLView";
 
+    private Context mContext;
+    private InputMethodManager mImeManager;
+    private EditText mTextReceiver;
+
     public MainGLView(Context context) {
         super(context);
+        mContext = context;
+        init(false, 0, 0);
+    }
+
+    public MainGLView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
         init(false, 0, 0);
     }
 
     public MainGLView(Context context, boolean translucent, int depth, int stencil) {
         super(context);
+        mContext = context;
         init(translucent, depth, stencil);
     }
 
@@ -102,7 +121,50 @@ public class MainGLView extends GLSurfaceView {
                 break;
         }
 
+        if (a == MotionEvent.ACTION_UP) {
+            if (mImeManager != null && mTextReceiver != null) {
+                mTextReceiver.requestFocus();
+                mTextReceiver.setText("");
+                mImeManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            }
+        }
+
         return true;
+    }
+
+    public void initPostCreate() {
+        boolean activityFound = false;
+        Context ctx = mContext;
+        while (ctx instanceof ContextWrapper) {
+            if (ctx instanceof Activity) {
+                activityFound = true;
+                break;
+            }
+            ctx = ((ContextWrapper)ctx).getBaseContext();
+        }
+
+        if (activityFound) {
+            mTextReceiver = ((Activity) ctx).findViewById(R.id.editText);
+            if (mTextReceiver != null) {
+                mTextReceiver.addTextChangedListener(
+                        new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                Log.e(TAG, mTextReceiver.getText().toString()); //Here you will get what you want
+                            }
+                        }
+                );
+            }
+            mImeManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
     }
 
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {

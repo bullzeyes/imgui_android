@@ -2,8 +2,10 @@ package com.example.xiaoxing.imgui_android;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,8 +16,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        glView = new MainGLView(getApplication());
-        setContentView(glView);
+        setContentView(R.layout.activity_main);
+        glView = findViewById(R.id.myGLView);
+        glView.initPostCreate();
+        //glView = new MainGLView(this, getApplication());
+        //setContentView(glView);
     }
 
     @Override protected void onPause() {

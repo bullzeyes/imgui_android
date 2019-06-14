@@ -6,4 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        />
+    <com.example.xiaoxing.imgui_android.MainGLView
+        android:id="@+id/myGLView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </android.support.constraint.ConstraintLayout>
