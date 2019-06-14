@@ -80,11 +80,11 @@ public class MainGLView extends GLSurfaceView {
         };
 
         int a = e.getActionMasked();
-        // Not handling ACTION_POINTER_ events, treat all pointers as the same button
         float x = e.getX();
         float y = e.getY();
+        int pointers = e.getPointerCount();
         if (a < actionName.length) {
-            Log.i(TAG, String.format("%s: %.2f, %.2f", actionName[a], x, y));
+            Log.i(TAG, String.format("%s: %.2f, %.2f, %d", actionName[a], x, y, pointers));
         }
         else {
             Log.e(TAG, "invalid action index");
@@ -94,11 +94,9 @@ public class MainGLView extends GLSurfaceView {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
             case MotionEvent.ACTION_UP:
-                GLViewJniLib.updateTouchEvent(a, x, y);
-                break;
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_POINTER_DOWN:
-                // Currently not handling these
+                GLViewJniLib.updateTouchEvent(a, x, y, pointers);
                 break;
             default:
                 break;

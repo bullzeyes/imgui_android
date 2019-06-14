@@ -12,7 +12,7 @@ IMGUI_IMPL_API bool     ImGui_ImplAndroid_InitForVulkan(int width, int height);
 IMGUI_IMPL_API void     ImGui_ImplAndroid_Shutdown();
 IMGUI_IMPL_API void     ImGui_ImplAndroid_NewFrame();
 
-IMGUI_IMPL_API void     ImGui_ImplAndroid_UpdateTouchEvent(int a, float x, float y);
+IMGUI_IMPL_API void     ImGui_ImplAndroid_UpdateTouchEvent(int a, float x, float y, int pointers);
 
 typedef enum {
     TOUCH_ACTION_DOWN = 0,
@@ -35,6 +35,9 @@ typedef struct {
     TOUCH_ACTION action;
     float x;
     float y;
+    int pointers;
+    float y_velocity;
+    float x_velocity;
 }TOUCH_EVENT;
 
 #endif //IMGUI_ANDROID_IMGUI_IMPL_ANDROID_H

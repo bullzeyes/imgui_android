@@ -45,11 +45,12 @@ void ImGui_ImplAndroid_Shutdown()
 
 }
 
-void ImGui_ImplAndroid_UpdateTouchEvent(int a, float x, float y)
+void ImGui_ImplAndroid_UpdateTouchEvent(int a, float x, float y, int pointers)
 {
     // TODO: Synchronization issue, potentially drop events
     if (a < TOUCH_ACTION_COUNT) {
-        g_LastTouchEvent = {.action = (TOUCH_ACTION) a, .x = x, .y = y};
+        float velocity_y = (float)(y - g_LastTouchEvent.y) / 100.f;
+        g_LastTouchEvent = {.action = (TOUCH_ACTION) a, .x = x, .y = y, .pointers = pointers, .y_velocity = velocity_y};
     }
     else {
         LOGE("invalid action index: %d", a);
@@ -66,6 +67,7 @@ static void ImGui_ImplAndroid_UpdateMousePosAndButtons() {
     // TOUCH_ACTION_MOVE -> MousePos
     // TOUCH_ACTION_DOWN -> MouseDown[0] true, left button
     // TOUCH_ACTION_UP -> MouseDown[0] false. left button
+    // TOUCH_ACTION_POINTER_DOWN -> multi finger as scroll, set MouseWheel. MouseWheelH not used
     if (TOUCH_ACTION_DOWN <= g_LastTouchEvent.action &&
         g_LastTouchEvent.action <= TOUCH_ACTION_MOVE) {
         io.MousePos.x = g_LastTouchEvent.x;
@@ -73,6 +75,13 @@ static void ImGui_ImplAndroid_UpdateMousePosAndButtons() {
     }
     switch (g_LastTouchEvent.action) {
         case TOUCH_ACTION_MOVE:
+            if (g_LastTouchEvent.pointers > 1) {
+                io.MouseWheel = g_LastTouchEvent.y_velocity;
+                io.MouseDown[0] = false;
+            }
+            else {
+                io.MouseWheel = 0;
+            }
             break;
         case TOUCH_ACTION_DOWN:
             io.MouseDown[0] = true;
