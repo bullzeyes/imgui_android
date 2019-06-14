@@ -19,7 +19,7 @@ JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_ini
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui_ImplAndroid_InitForOpenGL();
+    ImGui_ImplAndroid_InitForOpenGL(width, height);
     ImGui_ImplOpenGL3_Init("#version 300 es"); // 300 is implicitly telling imgui_impl_opengl3 to use GLES3
 }
 

@@ -7,8 +7,8 @@
 
 #pragma once
 
-IMGUI_IMPL_API bool     ImGui_ImplAndroid_InitForOpenGL();
-IMGUI_IMPL_API bool     ImGui_ImplAndroid_InitForVulkan();
+IMGUI_IMPL_API bool     ImGui_ImplAndroid_InitForOpenGL(int width, int height);
+IMGUI_IMPL_API bool     ImGui_ImplAndroid_InitForVulkan(int width, int height);
 IMGUI_IMPL_API void     ImGui_ImplAndroid_Shutdown();
 IMGUI_IMPL_API void     ImGui_ImplAndroid_NewFrame();
 

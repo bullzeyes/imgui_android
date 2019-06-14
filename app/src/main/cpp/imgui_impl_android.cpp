@@ -16,6 +16,7 @@
 
 static float g_Time; // time elapse in seconds
 static TOUCH_EVENT g_LastTouchEvent;
+static int g_SurfaceWidth, g_SurfaceHeight;
 
 long get_time_us()
 {
@@ -24,15 +25,17 @@ long get_time_us()
     return now.tv_sec * 1000000 + (now.tv_nsec / 1000);
 }
 
-bool ImGui_ImplAndroid_InitForOpenGL()
+bool ImGui_ImplAndroid_InitForOpenGL(int width, int height)
 {
     // Setup back-end capabilities flags
     ImGuiIO& io = ImGui::GetIO();
     io.BackendPlatformName = "imgui_impl_android";
+    g_SurfaceWidth = width;
+    g_SurfaceHeight = height;
     return true;
 }
 
-bool ImGui_ImplAndroid_InitForVulkan()
+bool ImGui_ImplAndroid_InitForVulkan(int width, int height)
 {
     return true;
 }
@@ -44,7 +47,7 @@ void ImGui_ImplAndroid_Shutdown()
 
 void ImGui_ImplAndroid_UpdateTouchEvent(int a, float x, float y)
 {
-    // TODO: Synchronization issue, potentially drop events 
+    // TODO: Synchronization issue, potentially drop events
     if (a < TOUCH_ACTION_COUNT) {
         g_LastTouchEvent = {.action = (TOUCH_ACTION) a, .x = x, .y = y};
     }
@@ -86,8 +89,8 @@ void ImGui_ImplAndroid_NewFrame()
 {
     ImGuiIO& io = ImGui::GetIO();
 
-    int w = 1080, h = 1920;
-    int display_w = 1080, display_h = 1920;
+    int w = g_SurfaceWidth, h = g_SurfaceHeight;
+    int display_w = g_SurfaceWidth, display_h = g_SurfaceHeight;
     io.DisplaySize = ImVec2((float)w, (float)h);
     if (w > 0 && h > 0)
         io.DisplayFramebufferScale = ImVec2((float)display_w / w, (float)display_h / h);
