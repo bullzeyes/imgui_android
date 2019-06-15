@@ -15,18 +15,35 @@ extern "C" {
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateTouchEvent(JNIEnv * env, jobject obj, jint action, jfloat x, jfloat y, jint pointers);
 };
 
-JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj,  jint width, jint height)
-{
+static bool initialized = false;
+
+static void imgui_Destroy() {
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplAndroid_Shutdown();
+    ImGui::DestroyContext();
+}
+
+static void imgui_Init(int width, int height) {
+
+    if (initialized) {
+        initialized = false;
+        imgui_Destroy();
+    }
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui_ImplAndroid_InitForOpenGL(width, height);
     ImGui_ImplOpenGL3_Init("#version 300 es"); // 300 is implicitly telling imgui_impl_opengl3 to use GLES3
+
+    initialized = true;
 }
 
-JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_step(JNIEnv * env, jobject obj)
-{
-    glClearColor(0.5, 0.5, 0.5, 1.0);
-    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+static void imgui_NewFrame() {
+
+    if (!initialized) {
+        return;
+    }
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame();
@@ -34,19 +51,49 @@ JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_ste
 
     bool show_demo_window = true;
     ImGui::ShowDemoWindow(&show_demo_window);
-    ImGui::Render();
+}
 
+static void imgui_DrawFrame() {
+
+    if (!initialized) {
+        return;
+    }
+
+    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+static void imgui_UpdateTouchEvent(int action, float x, float y, int pointers) {
+
+    if (!initialized) {
+        return;
+    }
+
+    ImGui_ImplAndroid_UpdateTouchEvent(action, x, y, pointers);
+}
+
+
+JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj,  jint width, jint height)
+{
+    imgui_Init(width, height);
+}
+
+JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_step(JNIEnv * env, jobject obj)
+{
+    glClearColor(0.5, 0.5, 0.5, 1.0);
+    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+    imgui_NewFrame();
+
+    imgui_DrawFrame();
 }
 
 JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_destroy(JNIEnv * env, jobject obj)
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplAndroid_Shutdown();
-    ImGui::DestroyContext();
+    imgui_Destroy();
 }
 
 JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateTouchEvent(JNIEnv * env, jobject obj, jint action, jfloat x, jfloat y, jint pointers)
 {
-    ImGui_ImplAndroid_UpdateTouchEvent(action, x, y, pointers);
+    imgui_UpdateTouchEvent(action, x, y, pointers);
 }

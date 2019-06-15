@@ -18,6 +18,12 @@ static float g_Time; // time elapse in seconds
 static TOUCH_EVENT g_LastTouchEvent;
 static int g_SurfaceWidth, g_SurfaceHeight;
 
+// Configurations
+
+// This is to make things more readable on high ppi devices.
+// Assuming native resolution here, should also take into consideration of framebuffer size
+static const float DefaultGlobalFontScale = 3.0;
+
 long get_time_us()
 {
     struct timespec now;
@@ -29,6 +35,7 @@ bool ImGui_ImplAndroid_InitForOpenGL(int width, int height)
 {
     // Setup back-end capabilities flags
     ImGuiIO& io = ImGui::GetIO();
+    g_Time = 0.0;
     io.BackendPlatformName = "imgui_impl_android";
     g_SurfaceWidth = width;
     g_SurfaceHeight = height;
@@ -37,7 +44,8 @@ bool ImGui_ImplAndroid_InitForOpenGL(int width, int height)
 
 bool ImGui_ImplAndroid_InitForVulkan(int width, int height)
 {
-    return true;
+    // Not implemented
+    return false;
 }
 
 void ImGui_ImplAndroid_Shutdown()
@@ -104,12 +112,14 @@ void ImGui_ImplAndroid_NewFrame()
     if (w > 0 && h > 0)
         io.DisplayFramebufferScale = ImVec2((float)display_w / w, (float)display_h / h);
 
-    // Android defaults to 3.0 scale
-    io.FontGlobalScale = 3.0;
+    // TODO: Should also take into consideration of framebuffer size
+    // TODO: DefaultGlobalFontScale * framebufferSize / nativeWindowSize
+    io.FontGlobalScale = DefaultGlobalFontScale;
 
     // Setup time step
     float current_time = (float)get_time_us();
-    io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) / 1000000 : (float)(1.0f/60.0f);
+    float deltaTime = (float)(current_time - g_Time) / 1000000;
+    io.DeltaTime = deltaTime > 0.0 ? deltaTime : (float)(1.0f/60.0f);
     g_Time = current_time;
 
     ImGui_ImplAndroid_UpdateMousePosAndButtons();
