@@ -9,6 +9,7 @@
 #include "imgui_impl_android.h"
 
 #include <android/log.h>
+#include <string>
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "imgui_impl_android", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "imgui_impl_android", __VA_ARGS__))
@@ -18,6 +19,7 @@ static float g_Time; // time elapse in seconds
 static TOUCH_EVENT g_LastTouchEvent;
 static int g_SurfaceWidth, g_SurfaceHeight;
 static int g_WindowWidth, g_WindowHeight;
+static char g_IniFilePath[256];
 
 // Configurations
 
@@ -32,7 +34,7 @@ long get_time_us()
     return now.tv_sec * 1000000 + (now.tv_nsec / 1000);
 }
 
-bool ImGui_ImplAndroid_InitForOpenGL(int surfaceWidth, int surfaceHeight, int windowWidth, int windowHeight)
+bool ImGui_ImplAndroid_InitForOpenGL(int surfaceWidth, int surfaceHeight, int windowWidth, int windowHeight, const char* outputDir)
 {
     g_Time = 0.0;
     g_SurfaceWidth = surfaceWidth;
@@ -44,11 +46,15 @@ bool ImGui_ImplAndroid_InitForOpenGL(int surfaceWidth, int surfaceHeight, int wi
     ImGuiIO& io = ImGui::GetIO();
 
     io.BackendPlatformName = "imgui_impl_android";
+    int charWritter = snprintf(g_IniFilePath, sizeof(g_IniFilePath), "%s/imgui.ini", outputDir);
+    if (0 < charWritter && charWritter < sizeof(g_IniFilePath)) {
+        io.IniFilename = g_IniFilePath;
+    }
 
     return true;
 }
 
-bool ImGui_ImplAndroid_InitForVulkan(int surfaceWidth, int surfaceHeight, int windowWidth, int windowHeight)
+bool ImGui_ImplAndroid_InitForVulkan(int surfaceWidth, int surfaceHeight, int windowWidth, int windowHeight, const char* outputDir)
 {
     // Not implemented
     return false;

@@ -299,7 +299,10 @@ public class MainGLView extends GLSurfaceView {
         }
 
         public void onSurfaceChanged(GL10 gl, int width, int height) {
-            GLViewJniLib.init(width, height, mParentView.getWidth(), mParentView.getHeight());
+            GLViewJniLib.init(
+                    width, height,
+                    mParentView.getWidth(), mParentView.getHeight(),
+                    mParentView.getContext().getFilesDir().getAbsolutePath());
         }
 
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
