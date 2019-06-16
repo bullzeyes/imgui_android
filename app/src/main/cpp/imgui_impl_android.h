@@ -1,5 +1,5 @@
 //
-// Created by Xiaoxing Zhu on 6/13/19.
+// Created by plaZmadoZer on 6/13/19.
 //
 
 #ifndef IMGUI_ANDROID_IMGUI_IMPL_ANDROID_H

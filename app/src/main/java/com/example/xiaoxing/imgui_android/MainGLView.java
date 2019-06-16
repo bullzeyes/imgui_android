@@ -45,6 +45,13 @@ public class MainGLView extends GLSurfaceView {
         init(translucent, depth, stencil);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        GLViewJniLib.pause();
+    }
+
     private void init(boolean translucent, int depth, int stencil) {
 
         /* By default, GLSurfaceView() creates a RGB_565 opaque surface.

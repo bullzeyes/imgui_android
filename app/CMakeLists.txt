@@ -19,6 +19,7 @@ add_library( # Sets the name of the library.
 
         # Provides a relative path to your source file(s).
         src/main/cpp/native-gllib.cpp
+        src/main/cpp/ImGuiConfigs.cpp
         src/main/cpp/imgui_impl_android.cpp
         ${IMGUI_DIR}/imgui_demo.cpp
         ${IMGUI_DIR}/imgui_draw.cpp

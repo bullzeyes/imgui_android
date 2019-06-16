@@ -12,16 +12,25 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
+#include "ImGuiConfigs.h"
+
 extern "C" {
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj,  jint surfaceWidth, jint surfaceHeight, jint windowWidth, jint windowHeight, jstring outputDir);
+    JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_pause(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_step(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_destroy(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateTouchEvent(JNIEnv * env, jobject obj, jint action, jfloat x, jfloat y, jint pointers);
 };
 
+static bool show_demo_window = false;
+static bool show_my_control_panel = true;
 static bool initialized = false;
+static std::string configFile;
 
 static void imgui_Destroy() {
+
+    ImGuiConfigs& configs = ImGuiConfigs::GetInstance();
+    configs.SaveToFile(configFile);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplAndroid_Shutdown();
@@ -40,7 +49,34 @@ static void imgui_Init(int surfaceWidth, int surfaceHeight, int windowWidth, int
     ImGui_ImplAndroid_InitForOpenGL(surfaceWidth, surfaceHeight, windowWidth, windowHeight, outputDir);
     ImGui_ImplOpenGL3_Init("#version 300 es"); // 300 is implicitly telling imgui_impl_opengl3 to use GLES3
 
+    ImGuiConfigs& configs = ImGuiConfigs::GetInstance();
+    configs.LoadFromFile(configFile);
+
     initialized = true;
+}
+
+static void ShowMyControlPanel() {
+
+    static const ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize;
+
+    ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSizeConstraints(ImVec2(60, 20), ImVec2(720, 1280));
+
+    if (!ImGui::Begin("Control Panel", 0, windowFlags)) {
+        ImGui::End();
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Configuration", ImGuiTreeNodeFlags_CollapsingHeader | ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        ImGuiConfigs& configs = ImGuiConfigs::GetInstance();
+        ImGui::Checkbox("check me", &configs.checkBoxConfig);
+        ImGui::InputInt("input int", &configs.intConfig);
+        ImGui::SliderFloat("slider value", &configs.floatSlider.value, configs.floatSlider.min, configs.floatSlider.max);
+    }
+
+    ImGui::End();
 }
 
 static void imgui_NewFrame() {
@@ -53,8 +89,13 @@ static void imgui_NewFrame() {
     ImGui_ImplAndroid_NewFrame();
     ImGui::NewFrame();
 
-    bool show_demo_window = true;
-    ImGui::ShowDemoWindow(&show_demo_window);
+    if (show_demo_window) {
+        ImGui::ShowDemoWindow(&show_demo_window);
+    }
+
+    if (show_my_control_panel) {
+        ShowMyControlPanel();
+    }
 }
 
 static void imgui_DrawFrame() {
@@ -82,6 +123,7 @@ JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_ini
     jboolean isCopy = false;
     const char *nativeString = env->GetStringUTFChars(outputDir, &isCopy);
 
+    configFile = std::string(nativeString).append("/imguiconfigs.json");
     imgui_Init(surfaceWidth, surfaceHeight, windowWidth, windowHeight, nativeString);
 
     env->ReleaseStringUTFChars(outputDir, nativeString);
@@ -95,6 +137,13 @@ JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_ste
     imgui_NewFrame();
 
     imgui_DrawFrame();
+}
+
+JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_pause(JNIEnv * env, jobject obj)
+{
+    // TODO: consider periodic auto-save
+    ImGuiConfigs& configs = ImGuiConfigs::GetInstance();
+    configs.SaveToFile(configFile);
 }
 
 JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_destroy(JNIEnv * env, jobject obj)

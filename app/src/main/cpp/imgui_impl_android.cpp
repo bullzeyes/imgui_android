@@ -1,5 +1,5 @@
 //
-// Created by Xiaoxing Zhu on 6/13/19.
+// Created by plaZmadoZer on 6/13/19.
 //
 
 #include <imgui/imgui.h>
@@ -49,6 +49,7 @@ bool ImGui_ImplAndroid_InitForOpenGL(int surfaceWidth, int surfaceHeight, int wi
     int charWritter = snprintf(g_IniFilePath, sizeof(g_IniFilePath), "%s/imgui.ini", outputDir);
     if (0 < charWritter && charWritter < sizeof(g_IniFilePath)) {
         io.IniFilename = g_IniFilePath;
+
     }
 
     return true;
