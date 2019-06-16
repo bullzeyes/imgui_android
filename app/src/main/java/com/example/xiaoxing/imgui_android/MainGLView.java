@@ -71,7 +71,7 @@ public class MainGLView extends GLSurfaceView {
                 new ConfigChooser(5, 6, 5, 0, depth, stencil) );
 
         /* Set the renderer responsible for frame rendering */
-        setRenderer(new Renderer());
+        setRenderer(new Renderer(this));
     }
 
     public void onDestroy() {
@@ -101,6 +101,7 @@ public class MainGLView extends GLSurfaceView {
         int a = e.getActionMasked();
         float x = e.getX();
         float y = e.getY();
+
         int pointers = e.getPointerCount();
         if (a < actionName.length) {
             Log.i(TAG, String.format("%s: %.2f, %.2f, %d", actionName[a], x, y, pointers));
@@ -133,6 +134,7 @@ public class MainGLView extends GLSurfaceView {
     }
 
     public void initPostCreate() {
+
         boolean activityFound = false;
         Context ctx = mContext;
         while (ctx instanceof ContextWrapper) {
@@ -285,12 +287,19 @@ public class MainGLView extends GLSurfaceView {
     }
 
     private static class Renderer implements GLSurfaceView.Renderer {
+
+        private GLSurfaceView mParentView;
+
+        public Renderer(GLSurfaceView owner) {
+            mParentView = owner;
+        }
+
         public void onDrawFrame(GL10 gl) {
             GLViewJniLib.step();
         }
 
         public void onSurfaceChanged(GL10 gl, int width, int height) {
-            GLViewJniLib.init(width, height);
+            GLViewJniLib.init(width, height, mParentView.getWidth(), mParentView.getHeight());
         }
 
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {

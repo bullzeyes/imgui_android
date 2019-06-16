@@ -8,8 +8,12 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include "imgui_impl_android.h"
 
+#include <android/native_activity.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+
 extern "C" {
-    JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj,  jint width, jint height);
+    JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj,  jint surfaceWidth, jint surfaceHeight, jint windowWidth, jint windowHeight);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_step(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_destroy(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateTouchEvent(JNIEnv * env, jobject obj, jint action, jfloat x, jfloat y, jint pointers);
@@ -24,7 +28,7 @@ static void imgui_Destroy() {
     ImGui::DestroyContext();
 }
 
-static void imgui_Init(int width, int height) {
+static void imgui_Init(int surfaceWidth, int surfaceHeight, int windowWidth, int windowHeight) {
 
     if (initialized) {
         initialized = false;
@@ -33,7 +37,7 @@ static void imgui_Init(int width, int height) {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui_ImplAndroid_InitForOpenGL(width, height);
+    ImGui_ImplAndroid_InitForOpenGL(surfaceWidth, surfaceHeight, windowWidth, windowHeight);
     ImGui_ImplOpenGL3_Init("#version 300 es"); // 300 is implicitly telling imgui_impl_opengl3 to use GLES3
 
     initialized = true;
@@ -73,9 +77,9 @@ static void imgui_UpdateTouchEvent(int action, float x, float y, int pointers) {
 }
 
 
-JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj,  jint width, jint height)
+JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_init(JNIEnv * env, jobject obj, jint surfaceWidth, jint surfaceHeight, jint windowWidth, jint windowHeight)
 {
-    imgui_Init(width, height);
+    imgui_Init(surfaceWidth, surfaceHeight, windowWidth, windowHeight);
 }
 
 JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_step(JNIEnv * env, jobject obj)

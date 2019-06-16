@@ -16,9 +16,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_main);
         glView = findViewById(R.id.myGLView);
         glView.initPostCreate();
+        glView.getHolder().setFixedSize(720, 1280);
         //glView = new MainGLView(this, getApplication());
         //setContentView(glView);
     }

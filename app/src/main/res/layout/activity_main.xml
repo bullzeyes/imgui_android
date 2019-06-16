@@ -6,14 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        />
-    <com.example.xiaoxing.imgui_android.MainGLView
-        android:id="@+id/myGLView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
 
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            />
+
+        <com.example.xiaoxing.imgui_android.MainGLView
+            android:id="@+id/myGLView"
+            android:layout_width="match_parent"
+            android:layout_marginTop="100px"
+            android:layout_marginLeft="100px"
+            android:layout_marginRight="50px"
+            android:layout_marginBottom="50px"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
