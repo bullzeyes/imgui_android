@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-set(IMGUI_DIR external/imgui)
+set(IMGUI_DIR ../../external/imgui)
 add_library( # Sets the name of the library.
         native-gllib
 
@@ -28,7 +28,7 @@ add_library( # Sets the name of the library.
         ${IMGUI_DIR}/imgui.cpp
 )
 target_include_directories(native-gllib PUBLIC
-    external
+    ../../external
 )
 
 # Searches for a specified prebuilt library and stores the path as a
