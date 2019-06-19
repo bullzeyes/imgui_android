@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
         glView = findViewById(R.id.myGLView);
         glView.initPostCreate();
         glView.getHolder().setFixedSize(720, 1280);
-        //glView = new MainGLView(this, getApplication());
-        //setContentView(glView);
     }
 
     @Override protected void onPause() {

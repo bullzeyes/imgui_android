@@ -15,4 +15,5 @@ public class GLViewJniLib {
     public static native void step();
     public static native void destroy();
     public static native void updateTouchEvent(int a, float x, float y, int pointers);
+    public static native void updateAccelerometerEvent(long timestamp, float x, float y, float z);
 }

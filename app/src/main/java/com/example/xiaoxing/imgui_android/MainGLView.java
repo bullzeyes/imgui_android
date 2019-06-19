@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.PixelFormat;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,12 +23,13 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
-public class MainGLView extends GLSurfaceView {
+public class MainGLView extends GLSurfaceView implements SensorEventListener {
 
     private static String TAG = "MainGLView";
 
     private Context mContext;
     private InputMethodManager mImeManager;
+    private SensorManager mSensorManager;
     private EditText mTextReceiver;
 
     public MainGLView(Context context) {
@@ -173,6 +178,27 @@ public class MainGLView extends GLSurfaceView {
                 );
             }
             mImeManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+            mSensorManager.registerListener(this,
+                    mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                    SensorManager.SENSOR_DELAY_GAME);
+
+        }
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+
+        GLViewJniLib.updateAccelerometerEvent(event.timestamp, event.values[0], event.values[1], event.values[2]);
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // no-op
+    }
+
+    private static void checkEglError(String prompt, EGL10 egl) {
+        int error;
+        while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS) {
+            Log.e(TAG, String.format("%s: EGL error: 0x%x", prompt, error));
         }
     }
 
@@ -189,13 +215,6 @@ public class MainGLView extends GLSurfaceView {
 
         public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
             egl.eglDestroyContext(display, context);
-        }
-    }
-
-    private static void checkEglError(String prompt, EGL10 egl) {
-        int error;
-        while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS) {
-            Log.e(TAG, String.format("%s: EGL error: 0x%x", prompt, error));
         }
     }
 

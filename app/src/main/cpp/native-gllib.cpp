@@ -11,6 +11,7 @@
 #include <android/native_activity.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+#include <cmath>
 
 #include "ImGuiConfigs.h"
 
@@ -20,11 +21,13 @@ extern "C" {
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_step(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_destroy(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateTouchEvent(JNIEnv * env, jobject obj, jint action, jfloat x, jfloat y, jint pointers);
+    JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateAccelerometerEvent(JNIEnv * env, jobject obj, jlong timestamp, jfloat x, jfloat y, jfloat z);
 };
 
 static bool show_demo_window = false;
 static bool show_my_control_panel = true;
 static bool initialized = false;
+static bool imgGuiShow = true;
 static std::string configFile;
 
 static void imgui_Destroy() {
@@ -63,7 +66,12 @@ static void ShowMyControlPanel() {
     ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSizeConstraints(ImVec2(60, 20), ImVec2(720, 1280));
 
-    if (!ImGui::Begin("Control Panel", 0, windowFlags)) {
+    if (!imgGuiShow) {
+        // hide imgui window
+        return;
+    }
+
+    if (!ImGui::Begin("Control Panel", &imgGuiShow, windowFlags)) {
         ImGui::End();
         return;
     }
@@ -154,4 +162,21 @@ JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_des
 JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateTouchEvent(JNIEnv * env, jobject obj, jint action, jfloat x, jfloat y, jint pointers)
 {
     imgui_UpdateTouchEvent(action, x, y, pointers);
+}
+
+JNIEXPORT void JNICALL Java_com_example_xiaoxing_imgui_1android_GLViewJniLib_updateAccelerometerEvent(JNIEnv * env, jobject obj, jlong timestamp, jfloat x, jfloat y, jfloat z)
+{
+    static const float Gravity = 9.80665f;
+    static const float SHAKE_SPEED_THRESHOLD = 8;
+
+    x = x / Gravity;
+    y = y / Gravity;
+    z = z / Gravity;
+
+    float speed = sqrt(x * x + y * y + z * z);
+    if (speed > SHAKE_SPEED_THRESHOLD) {
+        if (!imgGuiShow) {
+            imgGuiShow = true;
+        }
+    }
 }
