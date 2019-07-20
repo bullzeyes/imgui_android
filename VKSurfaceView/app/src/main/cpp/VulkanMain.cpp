@@ -18,7 +18,6 @@
 #include <cassert>
 #include <vector>
 #include <cstring>
-#include "vulkan_wrapper.h"
 
 // Android log function wrappers
 static const char* kTAG = "Vulkan-Tutorial04";
@@ -39,41 +38,9 @@ static const char* kTAG = "Vulkan-Tutorial04";
   }
 
 // Global Variables ...
-struct VulkanDeviceInfo {
-    bool initialized_;
 
-    VkInstance instance_;
-    VkPhysicalDevice gpuDevice_;
-    VkDevice device_;
-    uint32_t queueFamilyIndex_;
-
-    VkSurfaceKHR surface_;
-    VkQueue queue_;
-};
 VulkanDeviceInfo device;
-
-struct VulkanSwapchainInfo {
-    VkSwapchainKHR swapchain_;
-    uint32_t swapchainLength_;
-
-    VkExtent2D displaySize_;
-    VkFormat displayFormat_;
-
-    // array of frame buffers and views
-    std::vector<VkImage> displayImages_;
-    std::vector<VkImageView> displayViews_;
-    std::vector<VkFramebuffer> framebuffers_;
-};
 VulkanSwapchainInfo swapchain;
-
-struct VulkanRenderInfo {
-    VkRenderPass renderPass_;
-    VkCommandPool cmdPool_;
-    VkCommandBuffer* cmdBuffer_;
-    uint32_t cmdBufferLen_;
-    VkSemaphore semaphore_;
-    VkFence fence_;
-};
 VulkanRenderInfo render;
 
 // Android Native App pointer...

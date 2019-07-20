@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 set(APP_GLUE_DIR ${ANDROID_NDK}/sources/android/native_app_glue)
-include_directories(${APP_GLUE_DIR})
+include_directories(${APP_GLUE_DIR} ../../external)
 add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 
 # Creates and names a library, sets it as either STATIC
@@ -14,6 +14,7 @@ add_library(app-glue STATIC ${APP_GLUE_DIR}/android_native_app_glue.c)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
+set(IMGUI_DIR ../../external/imgui)
 add_library( # Sets the name of the library.
         native-lib
 
@@ -23,7 +24,13 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         src/main/cpp/native-lib.cpp
         src/main/cpp/vulkan_wrapper.cpp
-        src/main/cpp/VulkanMain.cpp)
+        src/main/cpp/VulkanMain.cpp
+        src/main/cpp/imgui_impl_android.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_impl_vulkan.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror \
                      -DVK_USE_PLATFORM_ANDROID_KHR")

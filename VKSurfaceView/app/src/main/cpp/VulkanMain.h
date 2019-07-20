@@ -14,6 +14,42 @@
 #ifndef __VULKANMAIN_HPP__
 #define __VULKANMAIN_HPP__
 #include <android/native_window.h>
+#include "vulkan_wrapper.h"
+#include <vector>
+
+struct VulkanDeviceInfo {
+    bool initialized_;
+
+    VkInstance instance_;
+    VkPhysicalDevice gpuDevice_;
+    VkDevice device_;
+    uint32_t queueFamilyIndex_;
+
+    VkSurfaceKHR surface_;
+    VkQueue queue_;
+};
+
+struct VulkanSwapchainInfo {
+    VkSwapchainKHR swapchain_;
+    uint32_t swapchainLength_;
+
+    VkExtent2D displaySize_;
+    VkFormat displayFormat_;
+
+    // array of frame buffers and views
+    std::vector<VkImage> displayImages_;
+    std::vector<VkImageView> displayViews_;
+    std::vector<VkFramebuffer> framebuffers_;
+};
+
+struct VulkanRenderInfo {
+    VkRenderPass renderPass_;
+    VkCommandPool cmdPool_;
+    VkCommandBuffer* cmdBuffer_;
+    uint32_t cmdBufferLen_;
+    VkSemaphore semaphore_;
+    VkFence fence_;
+};
 
 // Initialize vulkan device context
 // after return, vulkan is ready to draw
